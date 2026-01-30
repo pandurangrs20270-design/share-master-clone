@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, Mail } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -15,14 +16,24 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "About", href: "#about" },
-    { name: "Courses", href: "#courses" },
-    { name: "Features", href: "#features" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Contact", href: "#contact" },
+    { name: "Home", href: "#home", isAnchor: true },
+    { name: "About", href: "#about", isAnchor: true },
+    { name: "Courses", href: "#courses", isAnchor: true },
+    { name: "Syllabus", href: "#syllabus", isAnchor: true },
+    { name: "Blog", href: "/blog", isAnchor: false },
+    { name: "Contact", href: "#contact", isAnchor: true },
   ];
+
+  const handleNavClick = (e: React.MouseEvent, href: string, isAnchor: boolean) => {
+    if (isAnchor && !isHomePage) {
+      e.preventDefault();
+      window.location.href = "/" + href;
+    }
+  };
 
   return (
     <>
@@ -67,22 +78,35 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  className="text-foreground/80 hover:text-primary font-medium transition-colors relative group"
-                  whileHover={{ y: -2 }}
-                >
-                  {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-                </motion.a>
+                link.isAnchor ? (
+                  <motion.a
+                    key={link.name}
+                    href={isHomePage ? link.href : "/" + link.href}
+                    className="text-foreground/80 hover:text-primary font-medium transition-colors relative group"
+                    whileHover={{ y: -2 }}
+                  >
+                    {link.name}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                  </motion.a>
+                ) : (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    className="text-foreground/80 hover:text-primary font-medium transition-colors relative group"
+                  >
+                    <motion.span whileHover={{ y: -2 }} className="inline-block">
+                      {link.name}
+                    </motion.span>
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                  </Link>
+                )
               ))}
             </nav>
 
             {/* CTA Button */}
             <div className="hidden lg:block">
               <motion.a
-                href="#contact"
+                href={isHomePage ? "#contact" : "/#contact"}
                 className="btn-hero text-base px-6 py-3"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -112,17 +136,28 @@ const Header = () => {
             >
               <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
                 {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.name}
-                  </a>
+                  link.isAnchor ? (
+                    <a
+                      key={link.name}
+                      href={isHomePage ? link.href : "/" + link.href}
+                      className="text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className="text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  )
                 ))}
                 <a
-                  href="#contact"
+                  href={isHomePage ? "#contact" : "/#contact"}
                   className="btn-hero text-center mt-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
