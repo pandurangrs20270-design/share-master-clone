@@ -23,7 +23,6 @@ const Header = () => {
     { name: "Home", href: "#home", isAnchor: true },
     { name: "About", href: "#about", isAnchor: true },
     { name: "Courses", href: "#courses", isAnchor: true },
-    { name: "Syllabus", href: "#syllabus", isAnchor: true },
     { name: "Blog", href: "/blog", isAnchor: false },
     { name: "Contact", href: "#contact", isAnchor: true },
   ];

@@ -22,7 +22,9 @@ const Footer = () => {
     { name: "Courses", href: "#courses" },
     { name: "Features", href: "#features" },
     { name: "Testimonials", href: "#testimonials" },
+    { name: "Blog", href: "/blog" },
     { name: "Contact", href: "#contact" },
+    { name: "Admin", href: "/admin" },
   ];
 
   const courses = [

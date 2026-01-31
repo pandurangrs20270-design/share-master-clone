@@ -1,26 +1,23 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
-  BookOpen,
   Eye,
   TrendingUp,
   Plus,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAllBlogs } from "@/hooks/useBlogs";
-import { useAllSyllabus } from "@/hooks/useSyllabus";
 import { Link } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AdminDashboard = () => {
   const { data: blogs = [], isLoading: blogsLoading } = useAllBlogs();
-  const { data: syllabus = [], isLoading: syllabusLoading } = useAllSyllabus();
 
   const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
   const publishedBlogs = blogs.filter((b) => b.is_published).length;
-  const publishedSyllabus = syllabus.filter((s) => s.is_published).length;
+  const draftBlogs = blogs.filter((b) => !b.is_published).length;
 
   const stats = [
     {
@@ -38,18 +35,18 @@ const AdminDashboard = () => {
       bgColor: "bg-green-500/10",
     },
     {
+      title: "Draft Blogs",
+      value: draftBlogs,
+      icon: FileText,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+    },
+    {
       title: "Total Views",
       value: totalViews,
       icon: TrendingUp,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
-    },
-    {
-      title: "Syllabus Topics",
-      value: syllabus.length,
-      icon: BookOpen,
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
     },
   ];
 
@@ -65,11 +62,22 @@ const AdminDashboard = () => {
             transition={{ duration: 0.5 }}
           >
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-              <p className="text-muted-foreground mt-1">
-                Welcome back! Here's an overview of your content.
-              </p>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+                <p className="text-muted-foreground mt-1">
+                  Welcome back! Here's an overview of your content.
+                </p>
+              </div>
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                View Website
+              </a>
             </div>
 
             {/* Stats Grid */}
@@ -101,57 +109,30 @@ const AdminDashboard = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Blog Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    Create and manage blog posts for your website.
-                  </p>
-                  <div className="flex gap-3">
-                    <Link to="/admin/blogs/new">
-                      <Button className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        New Blog
-                      </Button>
-                    </Link>
-                    <Link to="/admin/blogs">
-                      <Button variant="outline">View All</Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5" />
-                    Syllabus Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    Add and organize course syllabus topics.
-                  </p>
-                  <div className="flex gap-3">
-                    <Link to="/admin/syllabus/new">
-                      <Button className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        New Topic
-                      </Button>
-                    </Link>
-                    <Link to="/admin/syllabus">
-                      <Button variant="outline">View All</Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Blog Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  Create and manage blog posts for your website with our advanced rich text editor.
+                </p>
+                <div className="flex gap-3">
+                  <Link to="/admin/blogs/new">
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      New Blog Post
+                    </Button>
+                  </Link>
+                  <Link to="/admin/blogs">
+                    <Button variant="outline">View All Blogs</Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Recent Blogs */}
             <Card>

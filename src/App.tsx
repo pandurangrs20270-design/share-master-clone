@@ -12,8 +12,6 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
-import AdminSyllabus from "./pages/AdminSyllabus";
-import AdminSyllabusEditor from "./pages/AdminSyllabusEditor";
 import AdminSettings from "./pages/AdminSettings";
 import AdminLayout from "./components/admin/AdminLayout";
 
@@ -37,8 +35,6 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/blogs" element={<AdminBlogs />} />
               <Route path="/admin/blogs/:id" element={<AdminBlogEditor />} />
-              <Route path="/admin/syllabus" element={<AdminSyllabus />} />
-              <Route path="/admin/syllabus/:id" element={<AdminSyllabusEditor />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
             </Route>
             
