@@ -41,9 +41,15 @@ const BlogDetail = () => {
     );
   }
 
-  // Calculate reading time (approx 200 words per minute)
-  const wordCount = blog.content.split(/\s+/).length;
-  const readingTime = Math.ceil(wordCount / 200);
+  // Calculate reading time from HTML content
+  const getTextFromHtml = (html: string) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+  
+  const wordCount = getTextFromHtml(blog.content).split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,16 +120,14 @@ const BlogDetail = () => {
               </span>
             </motion.div>
 
-            {/* Content */}
+            {/* Content - Renders HTML from rich text editor */}
             <motion.article
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="prose prose-lg max-w-none text-foreground"
+              className="prose prose-lg max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-a:text-primary prose-blockquote:border-primary prose-blockquote:text-muted-foreground"
             >
-              <div className="whitespace-pre-wrap leading-relaxed">
-                {blog.content}
-              </div>
+              <div dangerouslySetInnerHTML={{ __html: blog.content }} />
             </motion.article>
 
             {/* Share / CTA */}

@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   FileText,
-  BookOpen,
   Settings,
   LogOut,
   Menu,
@@ -18,7 +17,6 @@ import logo from "@/assets/logo.png";
 const sidebarItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Blogs", href: "/admin/blogs", icon: FileText },
-  { name: "Syllabus", href: "/admin/syllabus", icon: BookOpen },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

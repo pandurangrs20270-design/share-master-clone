@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Eye, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RichTextEditor from "@/components/editor/RichTextEditor";
 import {
   useAllBlogs,
   useCreateBlog,
@@ -84,6 +86,16 @@ const AdminBlogEditor = () => {
       .replace(/\s+/g, "-");
   };
 
+  // Calculate word count and reading time
+  const getTextFromHtml = (html: string) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+  
+  const wordCount = getTextFromHtml(formData.content).split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
   return (
     <div className="min-h-screen bg-muted/30">
       <AdminSidebar />
@@ -104,15 +116,20 @@ const AdminBlogEditor = () => {
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <div>
+              <div className="flex-1">
                 <h1 className="text-3xl font-bold text-foreground">
-                  {isEditing ? "Edit Blog" : "New Blog"}
+                  {isEditing ? "Edit Blog" : "New Blog Post"}
                 </h1>
                 <p className="text-muted-foreground mt-1">
                   {isEditing
-                    ? "Update your blog post"
-                    : "Create a new blog post"}
+                    ? "Update your blog post with rich formatting"
+                    : "Create a new blog post with our advanced editor"}
                 </p>
+              </div>
+              <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{wordCount} words</span>
+                <span>•</span>
+                <span>{readingTime} min read</span>
               </div>
             </div>
 
@@ -122,7 +139,10 @@ const AdminBlogEditor = () => {
                 <div className="lg:col-span-2 space-y-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Content</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Blog Content
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
@@ -137,7 +157,8 @@ const AdminBlogEditor = () => {
                               slug: generateSlug(e.target.value),
                             });
                           }}
-                          placeholder="Enter blog title"
+                          placeholder="Enter an engaging blog title"
+                          className="text-lg"
                           required
                         />
                       </div>
@@ -153,36 +174,60 @@ const AdminBlogEditor = () => {
                           placeholder="blog-url-slug"
                         />
                         <p className="text-xs text-muted-foreground">
-                          Leave empty to auto-generate from title
+                          Auto-generated from title. Customize if needed.
                         </p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="excerpt">Excerpt</Label>
+                        <Label htmlFor="excerpt">Excerpt / Summary</Label>
                         <Textarea
                           id="excerpt"
                           value={formData.excerpt}
                           onChange={(e) =>
                             setFormData({ ...formData, excerpt: e.target.value })
                           }
-                          placeholder="Brief description of the blog post..."
+                          placeholder="Write a brief summary that will appear in blog listings..."
                           rows={3}
                         />
                       </div>
+                    </CardContent>
+                  </Card>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="content">Content *</Label>
-                        <Textarea
-                          id="content"
-                          value={formData.content}
-                          onChange={(e) =>
-                            setFormData({ ...formData, content: e.target.value })
-                          }
-                          placeholder="Write your blog content here... (Supports Markdown)"
-                          rows={15}
-                          required
-                        />
-                      </div>
+                  {/* Rich Text Editor */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Content Editor</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Tabs defaultValue="editor" className="w-full">
+                        <TabsList className="mb-4">
+                          <TabsTrigger value="editor">Visual Editor</TabsTrigger>
+                          <TabsTrigger value="preview">Preview</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="editor">
+                          <RichTextEditor
+                            content={formData.content}
+                            onChange={(content) =>
+                              setFormData({ ...formData, content })
+                            }
+                            placeholder="Start writing your blog post... Use the toolbar above for formatting."
+                          />
+                        </TabsContent>
+                        <TabsContent value="preview">
+                          <div className="border border-border rounded-lg p-6 min-h-[400px] bg-background">
+                            {formData.content ? (
+                              <div 
+                                className="prose prose-lg max-w-none"
+                                dangerouslySetInnerHTML={{ __html: formData.content }}
+                              />
+                            ) : (
+                              <p className="text-muted-foreground">
+                                Nothing to preview yet. Start writing in the editor.
+                              </p>
+                            )}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </CardContent>
                   </Card>
                 </div>
@@ -191,7 +236,7 @@ const AdminBlogEditor = () => {
                 <div className="space-y-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Publish</CardTitle>
+                      <CardTitle>Publish Settings</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -210,8 +255,12 @@ const AdminBlogEditor = () => {
                           : "This blog is saved as a draft."}
                       </p>
 
-                      <div className="flex gap-2 pt-4">
-                        <Button type="submit" className="flex-1 gap-2">
+                      <div className="flex gap-2 pt-4 border-t border-border">
+                        <Button 
+                          type="submit" 
+                          className="flex-1 gap-2"
+                          disabled={createBlog.isPending || updateBlog.isPending}
+                        >
                           <Save className="h-4 w-4" />
                           {isEditing ? "Update" : "Save"}
                         </Button>
@@ -248,6 +297,9 @@ const AdminBlogEditor = () => {
                           }
                           placeholder="https://example.com/image.jpg"
                         />
+                        <p className="text-xs text-muted-foreground">
+                          Enter a URL to an image for the blog header.
+                        </p>
                       </div>
                       {formData.cover_image && (
                         <div className="mt-4">
@@ -255,9 +307,42 @@ const AdminBlogEditor = () => {
                             src={formData.cover_image}
                             alt="Cover preview"
                             className="w-full h-32 object-cover rounded-lg"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
                           />
                         </div>
                       )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>SEO Tips</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Use descriptive titles under 60 characters
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Write a compelling excerpt (150-160 chars)
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Include relevant keywords naturally
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Add images with descriptive alt text
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Use headings to structure content
+                        </li>
+                      </ul>
                     </CardContent>
                   </Card>
                 </div>

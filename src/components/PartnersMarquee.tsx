@@ -39,7 +39,7 @@ const PartnersMarquee = () => {
               key={`${partner.name}-1-${index}`}
               className="flex-shrink-0 mx-8 flex items-center justify-center"
             >
-              <div className="w-32 h-16 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="w-32 h-16 flex items-center justify-center transition-all duration-300 opacity-70 hover:opacity-100">
                 <img
                   src={partner.logo}
                   alt={partner.name}
@@ -58,7 +58,7 @@ const PartnersMarquee = () => {
               key={`${partner.name}-2-${index}`}
               className="flex-shrink-0 mx-8 flex items-center justify-center"
             >
-              <div className="w-32 h-16 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="w-32 h-16 flex items-center justify-center transition-all duration-300 opacity-70 hover:opacity-100">
                 <img
                   src={partner.logo}
                   alt={partner.name}
