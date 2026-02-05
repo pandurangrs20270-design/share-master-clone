@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { CheckCircle, TrendingUp, Target, Lightbulb } from "lucide-react";
-import trainerImg from "@/assets/trainer.jpg";
+import trainerImg from "@/assets/trainer1.png";
 
 const AboutSection = () => {
   const highlights = [
@@ -46,7 +46,7 @@ const AboutSection = () => {
               <img
                 src={trainerImg}
                 alt="ShareMaster Trainer"
-                className="w-full max-w-lg mx-auto rounded-2xl shadow-2xl"
+                className="w-full max-w-lg mx-auto rounded-2xl"
               />
               {/* Experience Badge */}
               <motion.div
@@ -61,7 +61,7 @@ const AboutSection = () => {
               </motion.div>
             </div>
             {/* Decorative Elements */}
-            <div className="absolute top-8 left-8 w-full h-full border-2 border-primary/20 rounded-2xl -z-10" />
+            {/* <div className="absolute top-8 left-8 w-full h-full border-2 border-primary/20 rounded-2xl -z-10" /> */}
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
