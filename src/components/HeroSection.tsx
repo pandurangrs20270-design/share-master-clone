@@ -1,8 +1,11 @@
- import { motion } from "framer-motion";
- import { ArrowRight, Play, Users, Award, BookOpen, TrendingUp, BarChart3 } from "lucide-react";
- import AnimatedCandlestickChart from "./hero/AnimatedCandlestickChart";
+import { motion } from "framer-motion";
+import { ArrowRight, Play, Users, Award, BookOpen, TrendingUp, BarChart3 } from "lucide-react";
+import AnimatedCandlestickChart from "./hero/AnimatedCandlestickChart";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HeroSection = () => {
+  const isMobile = useIsMobile();
+  
   const stats = [
     { icon: Users, value: "10K+", label: "Students Trained" },
     { icon: Award, value: "8+", label: "Years Experience" },
@@ -10,34 +13,42 @@ const HeroSection = () => {
   ];
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Animated Grid Background */}
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Dark gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 z-0" />
+      
+      {/* Animated Grid Background with glow */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/80" />
       </div>
 
-      {/* Animated Background Orbs */}
+      {/* Ambient animated orbs */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div
-          className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary/10 blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-20 left-10 w-72 h-72 rounded-full bg-blue-500/5 blur-3xl"
+          animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-accent/10 blur-3xl"
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-green-500/5 blur-3xl"
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.3, 0.2] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-primary/5 to-accent/5 blur-3xl"
+          className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-purple-500/5 blur-3xl"
           animate={{ rotate: 360 }}
           transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         />
+        <motion.div
+          className="absolute bottom-1/3 left-1/4 w-80 h-80 rounded-full bg-red-500/5 blur-3xl"
+          animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
-      <div className="container mx-auto px-4 z-10 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-4 z-10 py-24 lg:py-20">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -49,7 +60,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6"
+              className="inline-block px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-medium text-sm mb-6"
             >
               🎯 India's Most Trusted Stock Market Academy
             </motion.div>
@@ -58,10 +69,10 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white"
             >
               Learn{" "}
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 bg-clip-text text-transparent">
                 Stock Market Trading
               </span>{" "}
               From Certified Experts
@@ -71,7 +82,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-lg md:text-xl text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0"
             >
               Master the art of trading with our comprehensive courses. Learn Technical Analysis, 
               Live Trading & Investment Strategies from industry experts.
@@ -85,7 +96,7 @@ const HeroSection = () => {
             >
               <motion.a
                 href="#courses"
-                className="btn-hero"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -94,7 +105,7 @@ const HeroSection = () => {
               </motion.a>
               <motion.a
                 href="#about"
-                className="btn-hero-outline flex items-center justify-center gap-2"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-800/50 border border-slate-700 text-slate-200 font-semibold rounded-xl hover:bg-slate-700/50 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -119,66 +130,68 @@ const HeroSection = () => {
                   className="text-center lg:text-left"
                 >
                   <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
-                    <stat.icon className="text-primary" size={24} />
-                    <span className="text-2xl md:text-3xl font-bold text-foreground">
+                    <stat.icon className="text-blue-400" size={24} />
+                    <span className="text-2xl md:text-3xl font-bold text-white">
                       {stat.value}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  <p className="text-sm text-slate-500">{stat.label}</p>
                 </motion.div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Stock Market Visualization */}
+          {/* Right Content - Animated Candlestick Chart */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative hidden lg:block"
+            className="relative"
           >
-             {/* Live Candlestick Chart */}
-             <AnimatedCandlestickChart />
+            {/* Chart container with border glow */}
+            <div className="relative rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl shadow-black/50">
+              <AnimatedCandlestickChart />
+            </div>
 
             {/* Floating Badge - Top Right */}
-             <motion.div
-               initial={{ opacity: 0, scale: 0.8 }}
-               animate={{ opacity: 1, scale: 1 }}
-               transition={{ delay: 1 }}
-               className="absolute -top-4 -right-4 bg-card p-4 rounded-xl shadow-xl border border-border z-20"
-             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <TrendingUp className="text-green-500" size={24} />
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="absolute -top-4 -right-4 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-700/50 z-20"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <TrendingUp className="text-green-400" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">+32%</p>
+                    <p className="text-sm text-slate-400">Avg. Returns</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">+32%</p>
-                  <p className="text-sm text-muted-foreground">Avg. Returns</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Floating Badge - Bottom Left */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.2 }}
-               className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-xl border border-border z-20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <BarChart3 className="text-primary" size={24} />
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 1.4 }}
+                className="absolute -bottom-4 -left-4 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-700/50 z-20"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                    <BarChart3 className="text-blue-400" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">Live Trading</p>
+                    <p className="text-sm text-slate-400">Real Market Practice</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">Live Trading</p>
-                  <p className="text-sm text-muted-foreground">Real Market Practice</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Background Decorative Elements */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full border-2 border-primary/20 -z-10" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] rounded-full border border-primary/10 -z-10" />
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>
@@ -188,17 +201,17 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:block"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 rounded-full border-2 border-primary/50 flex justify-center pt-2"
+          className="w-6 h-10 rounded-full border-2 border-slate-600 flex justify-center pt-2"
         >
           <motion.div
             animate={{ opacity: [0, 1, 0], y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-1.5 h-1.5 rounded-full bg-primary"
+            className="w-1.5 h-1.5 rounded-full bg-blue-400"
           />
         </motion.div>
       </motion.div>
