@@ -24,7 +24,6 @@ const Footer = () => {
     { name: "Testimonials", href: "#testimonials" },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "#contact" },
-    { name: "Admin", href: "/admin" },
   ];
 
   const courses = [

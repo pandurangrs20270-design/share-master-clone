@@ -13,6 +13,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import AdminSettings from "./pages/AdminSettings";
+import AdminCourses from "./pages/AdminCourses";
+import AdminCourseEditor from "./pages/AdminCourseEditor";
+import AdminTestimonials from "./pages/AdminTestimonials";
+import AdminTestimonialEditor from "./pages/AdminTestimonialEditor";
 import AdminLayout from "./components/admin/AdminLayout";
 
 const queryClient = new QueryClient();
@@ -33,6 +37,10 @@ const App = () => (
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/courses" element={<AdminCourses />} />
+              <Route path="/admin/courses/:id" element={<AdminCourseEditor />} />
+              <Route path="/admin/testimonials" element={<AdminTestimonials />} />
+              <Route path="/admin/testimonials/:id" element={<AdminTestimonialEditor />} />
               <Route path="/admin/blogs" element={<AdminBlogs />} />
               <Route path="/admin/blogs/:id" element={<AdminBlogEditor />} />
               <Route path="/admin/settings" element={<AdminSettings />} />

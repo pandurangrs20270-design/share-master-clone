@@ -56,6 +56,72 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          best_for: string | null
+          color_gradient: string | null
+          created_at: string
+          description: string | null
+          duration: string | null
+          features: string[] | null
+          id: string
+          is_popular: boolean | null
+          is_published: boolean | null
+          mode: string
+          order_index: number | null
+          original_price: string | null
+          price: string
+          rating: number | null
+          students_count: string | null
+          subtitle: string | null
+          title: string
+          topics: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          best_for?: string | null
+          color_gradient?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          features?: string[] | null
+          id?: string
+          is_popular?: boolean | null
+          is_published?: boolean | null
+          mode: string
+          order_index?: number | null
+          original_price?: string | null
+          price: string
+          rating?: number | null
+          students_count?: string | null
+          subtitle?: string | null
+          title: string
+          topics?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          best_for?: string | null
+          color_gradient?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          features?: string[] | null
+          id?: string
+          is_popular?: boolean | null
+          is_published?: boolean | null
+          mode?: string
+          order_index?: number | null
+          original_price?: string | null
+          price?: string
+          rating?: number | null
+          students_count?: string | null
+          subtitle?: string | null
+          title?: string
+          topics?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       syllabus_topics: {
         Row: {
           content: string
@@ -88,6 +154,45 @@ export type Database = {
           is_published?: boolean
           order_index?: number
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          name: string
+          order_index: number | null
+          rating: number | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          name: string
+          order_index?: number | null
+          rating?: number | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          name?: string
+          order_index?: number | null
+          rating?: number | null
+          role?: string | null
           updated_at?: string
         }
         Relationships: []
