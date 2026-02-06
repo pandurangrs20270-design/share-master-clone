@@ -5,15 +5,21 @@ import {
   TrendingUp,
   Plus,
   ExternalLink,
+  BookOpen,
+  MessageSquareQuote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAllBlogs } from "@/hooks/useBlogs";
+import { useAllCourses } from "@/hooks/useCourses";
+import { useAllTestimonials } from "@/hooks/useTestimonials";
 import { Link } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AdminDashboard = () => {
   const { data: blogs = [], isLoading: blogsLoading } = useAllBlogs();
+  const { data: courses = [] } = useAllCourses();
+  const { data: testimonials = [] } = useAllTestimonials();
 
   const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
   const publishedBlogs = blogs.filter((b) => b.is_published).length;
@@ -21,25 +27,25 @@ const AdminDashboard = () => {
 
   const stats = [
     {
-      title: "Total Blogs",
-      value: blogs.length,
-      icon: FileText,
+      title: "Total Courses",
+      value: courses.length,
+      icon: BookOpen,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "Published Blogs",
-      value: publishedBlogs,
-      icon: Eye,
+      title: "Testimonials",
+      value: testimonials.length,
+      icon: MessageSquareQuote,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
     {
-      title: "Draft Blogs",
-      value: draftBlogs,
+      title: "Total Blogs",
+      value: blogs.length,
       icon: FileText,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10",
+      color: "text-orange-500",
+      bgColor: "bg-orange-500/10",
     },
     {
       title: "Total Views",
@@ -108,31 +114,83 @@ const AdminDashboard = () => {
               ))}
             </div>
 
-            {/* Quick Actions */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Blog Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Create and manage blog posts for your website with our advanced rich text editor.
-                </p>
-                <div className="flex gap-3">
-                  <Link to="/admin/blogs/new">
-                    <Button className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      New Blog Post
-                    </Button>
-                  </Link>
-                  <Link to="/admin/blogs">
-                    <Button variant="outline">View All Blogs</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Quick Actions Grid */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Courses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    Manage your training courses and programs.
+                  </p>
+                  <div className="flex gap-2">
+                    <Link to="/admin/courses/new">
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add
+                      </Button>
+                    </Link>
+                    <Link to="/admin/courses">
+                      <Button variant="outline" size="sm">View All</Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquareQuote className="h-5 w-5" />
+                    Testimonials
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    Add and manage student testimonials.
+                  </p>
+                  <div className="flex gap-2">
+                    <Link to="/admin/testimonials/new">
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add
+                      </Button>
+                    </Link>
+                    <Link to="/admin/testimonials">
+                      <Button variant="outline" size="sm">View All</Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Blog Posts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    Create and manage blog content.
+                  </p>
+                  <div className="flex gap-2">
+                    <Link to="/admin/blogs/new">
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add
+                      </Button>
+                    </Link>
+                    <Link to="/admin/blogs">
+                      <Button variant="outline" size="sm">View All</Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Recent Blogs */}
             <Card>

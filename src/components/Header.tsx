@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Menu, X, Phone, Mail, Settings } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,8 +104,20 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* CTA Button */}
-            <div className="hidden lg:block">
+            {/* CTA Buttons */}
+            <div className="hidden lg:flex items-center gap-3">
+              {isAdmin && (
+                <Link to="/admin">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Admin
+                  </motion.div>
+                </Link>
+              )}
               <motion.a
                 href={isHomePage ? "#contact" : "/#contact"}
                 className="btn-hero text-base px-6 py-3"
@@ -155,6 +169,16 @@ const Header = () => {
                     </Link>
                   )
                 ))}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-2 text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Settings className="h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                )}
                 <a
                   href={isHomePage ? "#contact" : "/#contact"}
                   className="btn-hero text-center mt-2"

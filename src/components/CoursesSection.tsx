@@ -1,94 +1,24 @@
 import { motion } from "framer-motion";
-import { Clock, Users, BookOpen, Star, ArrowRight, CheckCircle } from "lucide-react";
-
-const courses = [
-  {
-    id: 1,
-    title: "Online Share Market Training",
-    subtitle: "Daily Batch",
-    mode: "Online (Live Classes)",
-    bestFor: "Students, Beginners, Remote Learners",
-    description: "Learn the share market from the comfort of your home with our structured daily online classes.",
-    duration: "6-8 Weeks",
-    price: "₹10,000",
-    originalPrice: "₹15,000",
-    students: "5000+",
-    rating: 4.9,
-    features: [
-      "Daily live online sessions",
-      "Recorded class access",
-      "Beginner-friendly teaching",
-      "Doubt-clearing support",
-    ],
-    topics: [
-      "Basics of Stock Market (NSE, BSE)",
-      "Technical Analysis Fundamentals",
-      "Chart Reading & Indicators",
-      "Intraday & Swing Trading",
-      "Risk & Money Management",
-    ],
-    popular: false,
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    id: 2,
-    title: "Offline Evening Batch",
-    subtitle: "Working Professionals",
-    mode: "Offline (Classroom Training)",
-    bestFor: "Working Professionals & Office-Goers",
-    description: "Designed specially for working professionals. Learn trading after office hours with classroom-based learning.",
-    duration: "6-8 Weeks",
-    price: "₹15,000",
-    originalPrice: "₹20,000",
-    students: "3000+",
-    rating: 4.8,
-    features: [
-      "Evening batch timings",
-      "Classroom learning environment",
-      "Personal guidance from trainers",
-      "Ideal for job holders",
-    ],
-    topics: [
-      "Stock Market Basics to Advanced",
-      "Technical Analysis & Indicators",
-      "Trading Strategies for Part-Time",
-      "Risk Management & Psychology",
-      "Live Examples & Case Studies",
-    ],
-    popular: true,
-    color: "from-primary to-accent",
-  },
-  {
-    id: 3,
-    title: "Live Market Trading Batch",
-    subtitle: "Institute's Best Program",
-    mode: "Offline + Live Market Trading",
-    bestFor: "Serious Traders & Career-Focused Learners",
-    description: "Our most premium batch where students trade live with us during market hours. Real-time learning!",
-    duration: "8-10 Weeks",
-    price: "₹25,000",
-    originalPrice: "₹35,000",
-    students: "2000+",
-    rating: 5.0,
-    features: [
-      "Trade live during market hours",
-      "Sit with trainers & trade together",
-      "Real-time decision making",
-      "Institute's most recommended batch",
-    ],
-    topics: [
-      "Live Market Analysis (Real Trades)",
-      "Advanced Technical & Price Action",
-      "Options & Futures Trading",
-      "Professional Trading Strategies",
-      "Capital & Risk Management",
-    ],
-    popular: false,
-    color: "from-orange-500 to-red-500",
-  },
-];
+import { Clock, Users, BookOpen, Star, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { usePublishedCourses } from "@/hooks/useCourses";
 
 const CoursesSection = () => {
+  const { data: courses = [], isLoading } = usePublishedCourses();
+
+  if (isLoading) {
+    return (
+      <section id="courses" className="py-20 gradient-bg">
+        <div className="container mx-auto px-4 flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (courses.length === 0) {
+    return null;
+  }
+
   return (
     <section id="courses" className="py-20 gradient-bg">
       <div className="container mx-auto px-4">
@@ -124,7 +54,7 @@ const CoursesSection = () => {
               className="relative bg-card rounded-2xl overflow-hidden shadow-lg border border-border/50 group"
             >
               {/* Popular Badge */}
-              {course.popular && (
+              {course.is_popular && (
                 <div className="absolute top-4 right-4 z-10">
                   <span className="px-3 py-1 bg-secondary text-secondary-foreground text-xs font-bold rounded-full">
                     MOST POPULAR
@@ -133,7 +63,7 @@ const CoursesSection = () => {
               )}
 
               {/* Header Gradient */}
-              <div className={`h-2 bg-gradient-to-r ${course.color}`} />
+              <div className={`h-2 bg-gradient-to-r ${course.color_gradient || 'from-blue-500 to-cyan-500'}`} />
 
               <div className="p-6">
                 {/* Course Info */}
@@ -149,7 +79,7 @@ const CoursesSection = () => {
                     <span className="font-semibold">Mode:</span> {course.mode}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    <span className="font-semibold">Best For:</span> {course.bestFor}
+                    <span className="font-semibold">Best For:</span> {course.best_for}
                   </p>
                 </div>
 
@@ -161,7 +91,7 @@ const CoursesSection = () => {
                   </div>
                   <div className="flex items-center gap-1 text-sm">
                     <Users size={16} className="text-primary" />
-                    <span>{course.students}</span>
+                    <span>{course.students_count}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm">
                     <Star size={16} className="text-yellow-500 fill-yellow-500" />
@@ -170,39 +100,49 @@ const CoursesSection = () => {
                 </div>
 
                 {/* Key Features */}
-                <div className="mb-4">
-                  <p className="text-sm font-semibold mb-2">Key Features:</p>
-                  <ul className="space-y-1">
-                    {course.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <CheckCircle size={14} className="text-primary flex-shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {course.features && course.features.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-sm font-semibold mb-2">Key Features:</p>
+                    <ul className="space-y-1">
+                      {course.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle size={14} className="text-primary flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Topics */}
-                <div className="mb-6">
-                  <p className="text-sm font-semibold mb-2">What You'll Learn:</p>
-                  <ul className="space-y-1">
-                    {course.topics.slice(0, 3).map((topic, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <BookOpen size={14} className="text-accent flex-shrink-0" />
-                        {topic}
-                      </li>
-                    ))}
-                    <li className="text-sm text-primary font-medium">+ more...</li>
-                  </ul>
-                </div>
+                {course.topics && course.topics.length > 0 && (
+                  <div className="mb-6">
+                    <p className="text-sm font-semibold mb-2">What You'll Learn:</p>
+                    <ul className="space-y-1">
+                      {course.topics.slice(0, 3).map((topic, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <BookOpen size={14} className="text-accent flex-shrink-0" />
+                          {topic}
+                        </li>
+                      ))}
+                      {course.topics.length > 3 && (
+                        <li className="text-sm text-primary font-medium">+ more...</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Pricing */}
                 <div className="flex items-center gap-3 mb-6">
                   <span className="text-3xl font-bold text-foreground">{course.price}</span>
-                  <span className="text-lg text-muted-foreground line-through">{course.originalPrice}</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">
-                    SAVE {Math.round((1 - parseInt(course.price.replace(/[^\d]/g, '')) / parseInt(course.originalPrice.replace(/[^\d]/g, ''))) * 100)}%
-                  </span>
+                  {course.original_price && (
+                    <>
+                      <span className="text-lg text-muted-foreground line-through">{course.original_price}</span>
+                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">
+                        SAVE {Math.round((1 - parseInt(course.price.replace(/[^\d]/g, '')) / parseInt(course.original_price.replace(/[^\d]/g, ''))) * 100)}%
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* CTA Button */}
@@ -210,7 +150,7 @@ const CoursesSection = () => {
                   href="#contact"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${course.color} transition-all duration-300 hover:shadow-lg`}
+                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${course.color_gradient || 'from-blue-500 to-cyan-500'} transition-all duration-300 hover:shadow-lg`}
                 >
                   Enroll Now
                   <ArrowRight size={18} />
