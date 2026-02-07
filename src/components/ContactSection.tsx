@@ -7,8 +7,11 @@ import {
   Send, 
   MessageCircle,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from "lucide-react";
+import { useCreateInquiry } from "@/hooks/useInquiries";
+import { useToast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -19,15 +22,33 @@ const ContactSection = () => {
     message: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const createInquiry = useCreateInquiry();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: "", email: "", phone: "", course: "", message: "" });
-    }, 3000);
+    
+    try {
+      await createInquiry.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        course: formData.course || undefined,
+        message: formData.message || "No message provided",
+      });
+      
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({ name: "", email: "", phone: "", course: "", message: "" });
+      }, 3000);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit inquiry. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -190,9 +211,19 @@ const ContactSection = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full btn-hero flex items-center justify-center gap-2"
+                  disabled={createInquiry.isPending}
                 >
-                  <Send size={20} />
-                  Send Message
+                  {createInquiry.isPending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={20} />
+                      Send Message
+                    </>
+                  )}
                 </motion.button>
               </form>
             )}

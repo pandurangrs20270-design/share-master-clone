@@ -7,12 +7,14 @@ import {
   ExternalLink,
   BookOpen,
   MessageSquareQuote,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAllBlogs } from "@/hooks/useBlogs";
 import { useAllCourses } from "@/hooks/useCourses";
 import { useAllTestimonials } from "@/hooks/useTestimonials";
+import { useInquiries } from "@/hooks/useInquiries";
 import { Link } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
@@ -20,12 +22,22 @@ const AdminDashboard = () => {
   const { data: blogs = [], isLoading: blogsLoading } = useAllBlogs();
   const { data: courses = [] } = useAllCourses();
   const { data: testimonials = [] } = useAllTestimonials();
+  const { data: inquiries = [] } = useInquiries();
+
+  const pendingInquiries = inquiries.filter((i) => i.status === "pending").length;
 
   const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
   const publishedBlogs = blogs.filter((b) => b.is_published).length;
   const draftBlogs = blogs.filter((b) => !b.is_published).length;
 
   const stats = [
+    {
+      title: "Pending Inquiries",
+      value: pendingInquiries,
+      icon: MessageSquare,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+    },
     {
       title: "Total Courses",
       value: courses.length,
@@ -87,7 +99,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.title}
@@ -115,7 +127,26 @@ const AdminDashboard = () => {
             </div>
 
             {/* Quick Actions Grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    Inquiries
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    View and manage contact form submissions.
+                  </p>
+                  <div className="flex gap-2">
+                    <Link to="/admin/inquiries">
+                      <Button variant="outline" size="sm">View All</Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

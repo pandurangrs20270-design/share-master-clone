@@ -1,14 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, Mail, Settings } from "lucide-react";
+import { Menu, X, Phone, Mail, Settings, User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAdmin } = useAuth();
+  const { isAdmin, user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,17 +114,51 @@ const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              {isAdmin && (
-                <Link to="/admin">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Admin
-                  </motion.div>
-                </Link>
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link to="/admin">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors"
+                      >
+                        <Settings className="h-4 w-4" />
+                        Admin
+                      </motion.div>
+                    </Link>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="gap-2">
+                        <User className="h-4 w-4" />
+                        <span className="max-w-32 truncate">{user.email?.split("@")[0]}</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem className="text-muted-foreground text-xs">
+                        {user.email}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="ghost" className="font-medium">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="font-medium">Sign Up</Button>
+                  </Link>
+                </>
               )}
               <motion.a
                 href={isHomePage ? "#contact" : "/#contact"}
@@ -169,15 +211,38 @@ const Header = () => {
                     </Link>
                   )
                 ))}
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-2 text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Settings className="h-4 w-4" />
-                    Admin Dashboard
-                  </Link>
+                {user ? (
+                  <>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-2 text-foreground/80 hover:text-primary font-medium py-2 transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Settings className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 text-destructive font-medium py-2 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex gap-2 pt-2">
+                    <Link to="/login" className="flex-1" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">Login</Button>
+                    </Link>
+                    <Link to="/signup" className="flex-1" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full">Sign Up</Button>
+                    </Link>
+                  </div>
                 )}
                 <a
                   href={isHomePage ? "#contact" : "/#contact"}
