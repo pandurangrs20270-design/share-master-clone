@@ -11,11 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AuthModal } from "@/components/AuthModal";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { isAdmin, user, signOut } = useAuth();
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const Header = () => {
     { name: "Home", href: "#home", isAnchor: true },
     { name: "About", href: "#about", isAnchor: true },
     { name: "Courses", href: "#courses", isAnchor: true },
-    { name: "Blog", href: "/blog", isAnchor: false },
+    { name: "Blog", href: "#blog", isAnchor: true },
     { name: "Contact", href: "#contact", isAnchor: true },
   ];
 
@@ -116,18 +118,6 @@ const Header = () => {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
-                  {isAdmin && (
-                    <Link to="/admin">
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors"
-                      >
-                        <Settings className="h-4 w-4" />
-                        Admin
-                      </motion.div>
-                    </Link>
-                  )}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" className="gap-2">
@@ -140,6 +130,14 @@ const Header = () => {
                       <DropdownMenuItem className="text-muted-foreground text-xs">
                         {user.email}
                       </DropdownMenuItem>
+                      {isAdmin && (
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="flex items-center">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Admin Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
                         <LogOut className="h-4 w-4 mr-2" />
@@ -149,16 +147,9 @@ const Header = () => {
                   </DropdownMenu>
                 </>
               ) : (
-                <>
-                  <Link to="/login">
-                    <Button variant="ghost" className="font-medium">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button className="font-medium">Sign Up</Button>
-                  </Link>
-                </>
+                <Button variant="outline" className="font-medium" onClick={() => setAuthModalOpen(true)}>
+                  Login
+                </Button>
               )}
               <motion.a
                 href={isHomePage ? "#contact" : "/#contact"}
@@ -166,7 +157,7 @@ const Header = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Apply Now
+                Get in Touch
               </motion.a>
             </div>
 
@@ -235,13 +226,14 @@ const Header = () => {
                     </button>
                   </>
                 ) : (
-                  <div className="flex gap-2 pt-2">
-                    <Link to="/login" className="flex-1" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full">Login</Button>
-                    </Link>
-                    <Link to="/signup" className="flex-1" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full">Sign Up</Button>
-                    </Link>
+                  <div className="pt-2">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => { setAuthModalOpen(true); setIsMobileMenuOpen(false); }}
+                    >
+                      Login
+                    </Button>
                   </div>
                 )}
                 <a
@@ -249,13 +241,14 @@ const Header = () => {
                   className="btn-hero text-center mt-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Apply Now
+                  Get in Touch
                 </a>
               </nav>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.header>
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </>
   );
 };

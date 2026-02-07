@@ -4,7 +4,7 @@ import { Phone } from "lucide-react";
 const FloatingCTA = () => {
   return (
     <>
-      {/* Mobile Fixed Apply Now Button */}
+      {/* Mobile Fixed Get in Touch Button */}
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
@@ -22,7 +22,7 @@ const FloatingCTA = () => {
             href="#contact"
             className="flex-1 btn-hero py-3 text-center"
           >
-            Apply Now
+            Get in Touch
           </a>
         </div>
       </motion.div>

@@ -123,7 +123,7 @@ const BlogSection = () => {
                   to="/blog"
                   className="inline-flex items-center gap-2 text-primary font-semibold text-lg hover:gap-3 transition-all"
                 >
-                  View All Articles
+                  Explore more blogs
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </motion.div>

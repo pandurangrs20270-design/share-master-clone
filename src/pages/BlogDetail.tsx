@@ -1,9 +1,53 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Eye, ArrowLeft, Clock } from "lucide-react";
-import { useBlogBySlug } from "@/hooks/useBlogs";
+import { Calendar, Eye, ArrowLeft, Clock, BookOpen } from "lucide-react";
+import { useBlogBySlug, usePublishedBlogs } from "@/hooks/useBlogs";
+import type { Blog } from "@/hooks/useBlogs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+
+const RecentBlogsSection = ({ currentBlogId }: { currentBlogId: string }) => {
+  const { data: blogs = [] } = usePublishedBlogs();
+  const recent = blogs.filter((b) => b.id !== currentBlogId).slice(0, 3);
+  if (recent.length === 0) return null;
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className="mt-12 pt-8 border-t border-border"
+    >
+      <h3 className="text-xl font-semibold text-foreground mb-4">Recent Blogs</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {recent.map((blog: Blog) => (
+          <Link key={blog.id} to={`/blog/${blog.slug}`}>
+            <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
+              {blog.cover_image ? (
+                <div className="h-32 overflow-hidden">
+                  <img src={blog.cover_image} alt="" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="h-32 bg-muted flex items-center justify-center">
+                  <BookOpen className="h-8 w-8 text-muted-foreground" />
+                </div>
+              )}
+              <CardContent className="p-3">
+                <p className="font-medium text-sm line-clamp-2">{blog.title}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {new Date(blog.created_at).toLocaleDateString("en-IN")}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+      <Link to="/blog" className="inline-block mt-4 text-sm text-primary font-medium hover:underline">
+        Explore more blogs →
+      </Link>
+    </motion.section>
+  );
+};
 
 const BlogDetail = () => {
   const { slug } = useParams();
@@ -130,6 +174,9 @@ const BlogDetail = () => {
               <div dangerouslySetInnerHTML={{ __html: blog.content }} />
             </motion.article>
 
+            {/* Recent Blogs */}
+            <RecentBlogsSection currentBlogId={blog.id} />
+
             {/* Share / CTA */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -145,7 +192,7 @@ const BlogDetail = () => {
                   Join ShareMaster and learn from the best trading experts.
                 </p>
                 <Link to="/#contact" className="btn-hero px-8 py-3">
-                  Enroll Now
+                  Know More
                 </Link>
               </div>
             </motion.div>

@@ -8,8 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import AuthPage from "./pages/AuthPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
@@ -35,8 +34,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/signup" element={<AuthPage />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

@@ -131,7 +131,7 @@ const SyllabusSection = () => {
             href="#contact"
             className="inline-flex items-center gap-2 btn-hero text-lg px-8 py-4"
           >
-            Enroll Now
+            Know More
             <ChevronRight className="h-5 w-5" />
           </a>
         </motion.div>

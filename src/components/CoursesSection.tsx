@@ -152,7 +152,7 @@ const CoursesSection = () => {
                   whileTap={{ scale: 0.98 }}
                   className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${course.color_gradient || 'from-blue-500 to-cyan-500'} transition-all duration-300 hover:shadow-lg`}
                 >
-                  Enroll Now
+                  Know More
                   <ArrowRight size={18} />
                 </motion.a>
               </div>
