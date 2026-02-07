@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
 
-import { BookOpen, MessageSquareQuote } from "lucide-react";
+import { BookOpen, MessageSquareQuote, MessageSquare } from "lucide-react";
 
 const sidebarItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { name: "Courses", href: "/admin/courses", icon: BookOpen },
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
   { name: "Blogs", href: "/admin/blogs", icon: FileText },

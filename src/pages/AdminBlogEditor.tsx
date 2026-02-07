@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RichTextEditor from "@/components/editor/RichTextEditor";
+import ImageUploader from "@/components/editor/ImageUploader";
 import {
   useAllBlogs,
   useCreateBlog,
@@ -284,35 +285,14 @@ const AdminBlogEditor = () => {
                       <CardTitle>Cover Image</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-2">
-                        <Label htmlFor="cover_image">Image URL</Label>
-                        <Input
-                          id="cover_image"
-                          value={formData.cover_image}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              cover_image: e.target.value,
-                            })
-                          }
-                          placeholder="https://example.com/image.jpg"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Enter a URL to an image for the blog header.
-                        </p>
-                      </div>
-                      {formData.cover_image && (
-                        <div className="mt-4">
-                          <img
-                            src={formData.cover_image}
-                            alt="Cover preview"
-                            className="w-full h-32 object-cover rounded-lg"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
+                      <ImageUploader
+                        value={formData.cover_image}
+                        onChange={(url) =>
+                          setFormData({ ...formData, cover_image: url })
+                        }
+                        bucket="blog-images"
+                        folder="covers"
+                      />
                     </CardContent>
                   </Card>
 

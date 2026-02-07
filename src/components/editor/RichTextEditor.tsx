@@ -25,6 +25,8 @@ import {
   Undo,
   Redo,
   Minus,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
@@ -38,7 +40,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useCallback, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface RichTextEditorProps {
   content: string;
@@ -46,11 +51,17 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+
 const RichTextEditor = ({ content, onChange, placeholder = "Start writing..." }: RichTextEditorProps) => {
   const [linkUrl, setLinkUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const editor = useEditor({
     extensions: [
@@ -98,13 +109,76 @@ const RichTextEditor = ({ content, onChange, placeholder = "Start writing..." }:
     }
   }, [editor, linkUrl]);
 
-  const addImage = useCallback(() => {
-    if (imageUrl && editor) {
-      editor.chain().focus().setImage({ src: imageUrl }).run();
+  const addImage = useCallback((url: string) => {
+    if (url && editor) {
+      editor.chain().focus().setImage({ src: url }).run();
       setImageUrl("");
       setImageDialogOpen(false);
     }
-  }, [editor, imageUrl]);
+  }, [editor]);
+
+  const handleImageUpload = async (file: File) => {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload JPG, PNG, WebP, or GIF images.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "File too large",
+        description: "Maximum file size is 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `content/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(filePath);
+
+      addImage(publicUrl);
+
+      toast({
+        title: "Image uploaded",
+        description: "Image added to your content.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload image.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
 
   if (!editor) {
     return null;
@@ -301,26 +375,64 @@ const RichTextEditor = ({ content, onChange, placeholder = "Start writing..." }:
         {/* Image Dialog */}
         <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="ghost" size="sm">
-              <ImageIcon className="h-4 w-4" />
+            <Button type="button" variant="ghost" size="sm" disabled={isUploading}>
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ImageIcon className="h-4 w-4" />
+              )}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Image</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="image-url">Image URL</Label>
-                <Input
-                  id="image-url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
+            <Tabs defaultValue="upload" className="w-full">
+              <TabsList className="w-full">
+                <TabsTrigger value="upload" className="flex-1">Upload</TabsTrigger>
+                <TabsTrigger value="url" className="flex-1">URL</TabsTrigger>
+              </TabsList>
+              <TabsContent value="upload" className="space-y-4 py-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ALLOWED_TYPES.join(",")}
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
-              </div>
-              <Button type="button" onClick={addImage}>Add Image</Button>
-            </div>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                >
+                  {isUploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                      <p className="text-sm text-muted-foreground">Uploading...</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="h-10 w-10 text-muted-foreground" />
+                      <p className="text-sm font-medium">Click to upload image</p>
+                      <p className="text-xs text-muted-foreground">JPG, PNG, WebP, GIF up to 5MB</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="url" className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="image-url">Image URL</Label>
+                  <Input
+                    id="image-url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <Button type="button" onClick={() => addImage(imageUrl)} disabled={!imageUrl}>
+                  Add Image
+                </Button>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>

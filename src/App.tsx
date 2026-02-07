@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
@@ -17,6 +19,7 @@ import AdminCourses from "./pages/AdminCourses";
 import AdminCourseEditor from "./pages/AdminCourseEditor";
 import AdminTestimonials from "./pages/AdminTestimonials";
 import AdminTestimonialEditor from "./pages/AdminTestimonialEditor";
+import AdminInquiries from "./pages/AdminInquiries";
 import AdminLayout from "./components/admin/AdminLayout";
 
 const queryClient = new QueryClient();
@@ -32,11 +35,14 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/inquiries" element={<AdminInquiries />} />
               <Route path="/admin/courses" element={<AdminCourses />} />
               <Route path="/admin/courses/:id" element={<AdminCourseEditor />} />
               <Route path="/admin/testimonials" element={<AdminTestimonials />} />
