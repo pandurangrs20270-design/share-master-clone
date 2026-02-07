@@ -35,7 +35,7 @@ const AdminCourses = () => {
   const togglePublish = async (id: string, currentStatus: boolean) => {
     try {
       await updateCourse.mutateAsync({ id, is_published: !currentStatus });
-      toast.success(currentStatus ? "Course unpublished" : "Course published");
+      toast.success(currentStatus ? "Course hidden from website" : "Course shown on website");
     } catch (error) {
       toast.error("Failed to update course");
     }
@@ -114,11 +114,12 @@ const AdminCourses = () => {
                                 : "bg-yellow-500/10 text-yellow-500"
                             }`}
                           >
-                            {course.is_published ? "Published" : "Draft"}
+                            {course.is_published ? "Shown" : "Hidden"}
                           </span>
                           <Button
                             variant="ghost"
                             size="icon"
+                            title={course.is_published ? "Hide from website" : "Show on website"}
                             onClick={() =>
                               togglePublish(course.id, course.is_published)
                             }

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { 
   Phone, 
   Mail, 
@@ -147,12 +148,21 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-background/60 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} ShareMaster. All rights reserved.
+              © 2026 ShareMaster product by{" "}
+              <a
+                href="https://vidunaya.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors underline"
+              >
+                Vidunaya Technologies
+              </a>
+              . All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm text-background/60">
-              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms & Conditions</a>
-              <a href="#" className="hover:text-primary transition-colors">Refund Policy</a>
+              <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+              <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>
             </div>
           </div>
         </div>

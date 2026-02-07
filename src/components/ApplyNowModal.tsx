@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, X } from "lucide-react";
+import { validateName, validatePhone } from "@/lib/validation";
+import { useToast } from "@/hooks/use-toast";
 
 interface ApplyNowModalProps {
   isOpen: boolean;
@@ -8,6 +10,12 @@ interface ApplyNowModalProps {
 }
 
 const ApplyNowModal = ({ isOpen, onClose }: ApplyNowModalProps) => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [course, setCourse] = useState("");
+  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const { toast } = useToast();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -18,6 +26,28 @@ const ApplyNowModal = ({ isOpen, onClose }: ApplyNowModalProps) => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setName("");
+      setPhone("");
+      setCourse("");
+      setErrors({});
+    }
+  }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const nameErr = validateName(name, "Full name");
+    const phoneErr = validatePhone(phone);
+    if (nameErr || phoneErr) {
+      setErrors({ name: nameErr || undefined, phone: phoneErr || undefined });
+      return;
+    }
+    setErrors({});
+    toast({ title: "Request received", description: "We'll call you shortly." });
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -49,28 +79,40 @@ const ApplyNowModal = ({ isOpen, onClose }: ApplyNowModalProps) => {
         </div>
 
         {/* Form */}
-        <form className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
             <input
               type="text"
+              value={name}
+              onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
               required
-              className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              minLength={2}
+              maxLength={100}
+              className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none ${errors.name ? "border-destructive" : "border-border"}`}
               placeholder="Enter your name"
             />
+            {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
             <input
               type="tel"
+              value={phone}
+              onChange={(e) => { setPhone(e.target.value); setErrors((p) => ({ ...p, phone: undefined })); }}
               required
-              className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-              placeholder="+91 9876543210"
+              className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none ${errors.phone ? "border-destructive" : "border-border"}`}
+              placeholder="10-digit mobile e.g. 9876543210"
             />
+            {errors.phone && <p className="text-destructive text-sm mt-1">{errors.phone}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Select Course</label>
-            <select className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+            <select
+              value={course}
+              onChange={(e) => setCourse(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+            >
               <option value="">Choose a course...</option>
               <option value="online">Online Share Market Training</option>
               <option value="offline">Offline Evening Batch</option>

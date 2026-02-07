@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, Mail, Settings, User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,11 +14,17 @@ import {
 import { AuthModal } from "@/components/AuthModal";
 import logo from "@/assets/logo.png";
 
-const Header = () => {
+interface HeaderProps {
+  onGetInTouchClick?: () => void;
+}
+
+const Header = ({ onGetInTouchClick }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  // Login button hidden – users/admins can go to /login, /signup, or /admin/login directly via URL
+  // const [authModalOpen, setAuthModalOpen] = useState(false);
   const { isAdmin, user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -146,16 +152,28 @@ const Header = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </>
+              ) : null}
+              {/* Login button hidden – use /login or /signup URL directly
               ) : (
                 <Button variant="outline" className="font-medium" onClick={() => setAuthModalOpen(true)}>
                   Login
                 </Button>
               )}
+              */}
               <motion.a
                 href={isHomePage ? "#contact" : "/#contact"}
-                className="btn-hero text-base px-6 py-3"
+                className="btn-hero text-base px-6 py-3 cursor-pointer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onGetInTouchClick?.();
+                  if (isHomePage) {
+                    window.location.hash = "contact";
+                  } else {
+                    navigate("/#contact");
+                  }
+                }}
               >
                 Get in Touch
               </motion.a>
@@ -225,6 +243,8 @@ const Header = () => {
                       Sign Out
                     </button>
                   </>
+                ) : null}
+                {/* Login button hidden – use /login or /signup URL directly
                 ) : (
                   <div className="pt-2">
                     <Button
@@ -236,10 +256,20 @@ const Header = () => {
                     </Button>
                   </div>
                 )}
+                */}
                 <a
                   href={isHomePage ? "#contact" : "/#contact"}
-                  className="btn-hero text-center mt-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="btn-hero text-center mt-2 block"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onGetInTouchClick?.();
+                    setIsMobileMenuOpen(false);
+                    if (isHomePage) {
+                      window.location.hash = "contact";
+                    } else {
+                      navigate("/#contact");
+                    }
+                  }}
                 >
                   Get in Touch
                 </a>
@@ -248,7 +278,9 @@ const Header = () => {
           )}
         </AnimatePresence>
       </motion.header>
+      {/* AuthModal – Login/Signup via /login or /signup URL directly
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      */}
     </>
   );
 };

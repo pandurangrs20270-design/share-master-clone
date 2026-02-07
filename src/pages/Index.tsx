@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PartnersMarquee from "@/components/PartnersMarquee";
@@ -13,9 +15,25 @@ import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
 
 const Index = () => {
+  const location = useLocation();
+  const [contactFormResetKey, setContactFormResetKey] = useState(0);
+
+  const handleGetInTouchClick = () => {
+    setContactFormResetKey((k) => k + 1);
+  };
+
+  useEffect(() => {
+    if (location.hash === "#contact" || location.hash === "contact") {
+      const el = document.getElementById("contact");
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+      }
+    }
+  }, [location.pathname, location.hash, location.search]);
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header onGetInTouchClick={handleGetInTouchClick} />
       <main>
         <HeroSection />
         <PartnersMarquee />
@@ -26,7 +44,7 @@ const Index = () => {
         <TestimonialsSection />
         <BlogSection />
         <FAQSection />
-        <ContactSection />
+        <ContactSection key={contactFormResetKey} />
       </main>
       <Footer />
       <FloatingCTA />

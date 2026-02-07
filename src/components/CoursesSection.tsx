@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Clock, Users, BookOpen, Star, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import { usePublishedCourses } from "@/hooks/useCourses";
 
@@ -146,15 +147,18 @@ const CoursesSection = () => {
                 </div>
 
                 {/* CTA Button */}
-                <motion.a
-                  href="#contact"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${course.color_gradient || 'from-blue-500 to-cyan-500'} transition-all duration-300 hover:shadow-lg`}
+                <Link
+                  to={`/?course=${encodeURIComponent(course.title)}&courseId=${encodeURIComponent(course.id)}#contact`}
                 >
-                  Know More
-                  <ArrowRight size={18} />
-                </motion.a>
+                  <motion.span
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r ${course.color_gradient || 'from-blue-500 to-cyan-500'} transition-all duration-300 hover:shadow-lg block`}
+                  >
+                    Know More
+                    <ArrowRight size={18} />
+                  </motion.span>
+                </Link>
               </div>
             </motion.div>
           ))}

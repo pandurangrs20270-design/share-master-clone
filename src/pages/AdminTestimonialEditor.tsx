@@ -14,6 +14,7 @@ import {
   useUpdateTestimonial,
 } from "@/hooks/useTestimonials";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import ImageUploader from "@/components/editor/ImageUploader";
 import { toast } from "sonner";
 
 const AdminTestimonialEditor = () => {
@@ -151,22 +152,20 @@ const AdminTestimonialEditor = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="image_url">Profile Image URL</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image_url: e.target.value })
-                      }
-                      placeholder="https://example.com/avatar.jpg"
-                    />
-                    {formData.image_url && (
-                      <img
-                        src={formData.image_url}
-                        alt="Preview"
-                        className="mt-2 w-16 h-16 rounded-full object-cover"
+                    <Label>Profile Image</Label>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Upload a photo or paste an image URL. Shown next to the testimonial on the website.
+                    </p>
+                    <div className="max-w-xs">
+                      <ImageUploader
+                        bucket="blog-images"
+                        folder="testimonials"
+                        value={formData.image_url}
+                        onChange={(url) =>
+                          setFormData({ ...formData, image_url: url })
+                        }
                       />
-                    )}
+                    </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
@@ -210,7 +209,12 @@ const AdminTestimonialEditor = () => {
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t">
-                    <Label htmlFor="is_published">Published</Label>
+                    <div>
+                      <Label htmlFor="is_published">Show on website</Label>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Hidden testimonials are not shown to visitors.
+                      </p>
+                    </div>
                     <Switch
                       id="is_published"
                       checked={formData.is_published}

@@ -130,6 +130,7 @@ const AdminTestimonials = () => {
                           <Button
                             variant="ghost"
                             size="icon"
+                            title={testimonial.is_published ? "Hide from website" : "Show on website"}
                             onClick={() =>
                               togglePublish(testimonial.id, testimonial.is_published)
                             }

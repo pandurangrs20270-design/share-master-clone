@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import AuthPage from "./pages/AuthPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import RefundPolicy from "./pages/RefundPolicy";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
@@ -36,6 +39,9 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { validateEmail, validatePassword } from "@/lib/validation";
 import logo from "@/assets/logo.png";
 
 const AdminLogin = () => {
@@ -14,12 +15,20 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    if (emailErr || passwordErr) {
+      setErrors({ email: emailErr || undefined, password: passwordErr || undefined });
+      return;
+    }
+    setErrors({});
     setIsLoading(true);
 
     const { error } = await signIn(email, password);
@@ -70,11 +79,12 @@ const AdminLogin = () => {
                   type="email"
                   placeholder="admin@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                  className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
                   required
                 />
               </div>
+              {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -86,9 +96,10 @@ const AdminLogin = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
+                  onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
+                  className={`pl-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
                   required
+                  minLength={6}
                 />
                 <button
                   type="button"
@@ -98,6 +109,7 @@ const AdminLogin = () => {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
             </div>
 
             <Button

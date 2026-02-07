@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 import { 
   Phone, 
   Mail, 
@@ -12,22 +13,87 @@ import {
 } from "lucide-react";
 import { useCreateInquiry } from "@/hooks/useInquiries";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePublishedCourses } from "@/hooks/useCourses";
+import { validateName, validateEmail, validatePhone, validateMessage } from "@/lib/validation";
+
+const defaultFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  course: "",
+  message: "",
+};
 
 const ContactSection = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    course: "",
-    message: "",
-  });
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const courseFromUrl = searchParams.get("course");
+  const courseIdFromUrl = searchParams.get("courseId");
+  const { data: courses = [] } = usePublishedCourses();
+
+  const [formData, setFormData] = useState(defaultFormState);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const createInquiry = useCreateInquiry();
   const { toast } = useToast();
 
+  const validateContactForm = (): boolean => {
+    const nameErr = validateName(formData.name, "Full name");
+    const emailErr = validateEmail(formData.email);
+    const phoneErr = validatePhone(formData.phone);
+    const messageErr = validateMessage(formData.message);
+    const newErrors: Record<string, string> = {};
+    if (nameErr) newErrors.name = nameErr;
+    if (emailErr) newErrors.email = emailErr;
+    if (phoneErr) newErrors.phone = phoneErr;
+    if (messageErr) newErrors.message = messageErr;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    let err: string | null = null;
+    if (name === "name") err = validateName(value, "Full name");
+    else if (name === "email") err = validateEmail(value);
+    else if (name === "phone") err = validatePhone(value);
+    else if (name === "message") err = validateMessage(value);
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (err) next[name] = err;
+      else delete next[name];
+      return next;
+    });
+  };
+
+  // Prefill form when user lands with ?course= & ?courseId= (Know More) or when logged-in user data is available
+  useEffect(() => {
+    const name = (user?.user_metadata?.full_name || user?.user_metadata?.name) as string | undefined;
+    const email = user?.email ?? "";
+    const phone = (user?.user_metadata?.phone as string | undefined) ?? "";
+    const courseLabel = courseFromUrl ? decodeURIComponent(courseFromUrl) : "";
+    const message = courseLabel
+      ? `I want to join and learn more about this (${courseLabel}) in details. Thank you so much.`
+      : "";
+    const courseValue = courseIdFromUrl || "";
+
+    setFormData((prev) => ({
+      name: name || prev.name,
+      email: email || prev.email,
+      phone: phone || prev.phone,
+      course: courseValue || prev.course,
+      message: message || prev.message,
+    }));
+  }, [user, courseFromUrl, courseIdFromUrl, courses]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setTouched({ name: true, email: true, phone: true, message: true });
+    if (!validateContactForm()) return;
+
     try {
       await createInquiry.mutateAsync({
         name: formData.name,
@@ -38,6 +104,8 @@ const ContactSection = () => {
       });
       
       setIsSubmitted(true);
+      setErrors({});
+      setTouched({});
       setTimeout(() => {
         setIsSubmitted(false);
         setFormData({ name: "", email: "", phone: "", course: "", message: "" });
@@ -52,7 +120,16 @@ const ContactSection = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (touched[name] && errors[name]) {
+      let err = "";
+      if (name === "name") err = validateName(value, "Full name") || "";
+      else if (name === "email") err = validateEmail(value) || "";
+      else if (name === "phone") err = validatePhone(value) || "";
+      else if (name === "message") err = validateMessage(value) || "";
+      setErrors((prev) => (err ? { ...prev, [name]: err } : { ...prev, [name]: "" }));
+    }
   };
 
   const contactInfo = [
@@ -139,10 +216,14 @@ const ContactSection = () => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                      minLength={2}
+                      maxLength={100}
+                      className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ${errors.name ? "border-destructive" : "border-border"}`}
                       placeholder="John Doe"
                     />
+                    {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -153,10 +234,12 @@ const ContactSection = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                      placeholder="+91 9876543210"
+                      className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ${errors.phone ? "border-destructive" : "border-border"}`}
+                      placeholder="10-digit mobile e.g. 9876543210"
                     />
+                    {errors.phone && <p className="text-destructive text-sm mt-1">{errors.phone}</p>}
                   </div>
                 </div>
 
@@ -169,10 +252,12 @@ const ContactSection = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                    className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ${errors.email ? "border-destructive" : "border-border"}`}
                     placeholder="john@example.com"
                   />
+                  {errors.email && <p className="text-destructive text-sm mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -186,9 +271,11 @@ const ContactSection = () => {
                     className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
                   >
                     <option value="">Choose a course...</option>
-                    <option value="online">Online Share Market Training (₹10,000)</option>
-                    <option value="offline">Offline Evening Batch (₹15,000)</option>
-                    <option value="live">Live Market Trading Batch (₹25,000)</option>
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title} {c.price && `(${c.price})`}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -200,10 +287,14 @@ const ContactSection = () => {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
+                    maxLength={2000}
+                    className={`w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none ${errors.message ? "border-destructive" : "border-border"}`}
                     placeholder="Tell us about your goals and any questions you have..."
                   />
+                  {errors.message && <p className="text-destructive text-sm mt-1">{errors.message}</p>}
+                  <p className="text-muted-foreground text-xs mt-1">{formData.message.length}/2000</p>
                 </div>
 
                 <motion.button

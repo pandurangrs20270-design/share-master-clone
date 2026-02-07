@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { validateEmail, validateName, validatePassword } from "@/lib/validation";
 import logo from "@/assets/logo.png";
 
 type AuthTab = "login" | "signup";
@@ -29,6 +30,8 @@ const AuthPage = () => {
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({});
+  const [signupErrors, setSignupErrors] = useState<{ name?: string; email?: string; password?: string; confirm?: string }>({});
 
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
@@ -36,6 +39,13 @@ const AuthPage = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailErr = validateEmail(loginEmail);
+    const passwordErr = validatePassword(loginPassword);
+    if (emailErr || passwordErr) {
+      setLoginErrors({ email: emailErr || undefined, password: passwordErr || undefined });
+      return;
+    }
+    setLoginErrors({});
     setIsLoading(true);
     try {
       const { error } = await signIn(loginEmail, loginPassword);
@@ -62,22 +72,20 @@ const AuthPage = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (signupPassword !== signupConfirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match.",
-        variant: "destructive",
+    const nameErr = validateName(signupName, "Full name");
+    const emailErr = validateEmail(signupEmail);
+    const passwordErr = validatePassword(signupPassword);
+    const confirmErr = signupPassword !== signupConfirmPassword ? "Passwords do not match." : null;
+    if (nameErr || emailErr || passwordErr || confirmErr) {
+      setSignupErrors({
+        name: nameErr || undefined,
+        email: emailErr || undefined,
+        password: passwordErr || undefined,
+        confirm: confirmErr || undefined,
       });
       return;
     }
-    if (signupPassword.length < 6) {
-      toast({
-        title: "Weak Password",
-        description: "Password must be at least 6 characters long.",
-        variant: "destructive",
-      });
-      return;
-    }
+    setSignupErrors({});
     setIsLoading(true);
     try {
       const { error } = await signUp(signupEmail, signupPassword, signupName);
@@ -161,12 +169,13 @@ const AuthPage = () => {
                         id="login-email"
                         type="email"
                         value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
+                        onChange={(e) => { setLoginEmail(e.target.value); setLoginErrors((p) => ({ ...p, email: undefined })); }}
                         placeholder="you@example.com"
-                        className="pl-10"
+                        className={`pl-10 ${loginErrors.email ? "border-destructive" : ""}`}
                         required
                       />
                     </div>
+                    {loginErrors.email && <p className="text-destructive text-sm">{loginErrors.email}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Password</Label>
@@ -176,12 +185,14 @@ const AuthPage = () => {
                         id="login-password"
                         type="password"
                         value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
+                        onChange={(e) => { setLoginPassword(e.target.value); setLoginErrors((p) => ({ ...p, password: undefined })); }}
                         placeholder="••••••••"
-                        className="pl-10"
+                        className={`pl-10 ${loginErrors.password ? "border-destructive" : ""}`}
                         required
+                        minLength={6}
                       />
                     </div>
+                    {loginErrors.password && <p className="text-destructive text-sm">{loginErrors.password}</p>}
                   </div>
                   <Button type="submit" className="w-full gap-2" disabled={isLoading}>
                     {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing In...</> : <><span>Sign In</span><ArrowRight className="h-4 w-4" /></>}
@@ -198,12 +209,15 @@ const AuthPage = () => {
                         id="signup-name"
                         type="text"
                         value={signupName}
-                        onChange={(e) => setSignupName(e.target.value)}
+                        onChange={(e) => { setSignupName(e.target.value); setSignupErrors((p) => ({ ...p, name: undefined })); }}
                         placeholder="John Doe"
-                        className="pl-10"
+                        className={`pl-10 ${signupErrors.name ? "border-destructive" : ""}`}
                         required
+                        minLength={2}
+                        maxLength={100}
                       />
                     </div>
+                    {signupErrors.name && <p className="text-destructive text-sm">{signupErrors.name}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
@@ -213,12 +227,13 @@ const AuthPage = () => {
                         id="signup-email"
                         type="email"
                         value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
+                        onChange={(e) => { setSignupEmail(e.target.value); setSignupErrors((p) => ({ ...p, email: undefined })); }}
                         placeholder="you@example.com"
-                        className="pl-10"
+                        className={`pl-10 ${signupErrors.email ? "border-destructive" : ""}`}
                         required
                       />
                     </div>
+                    {signupErrors.email && <p className="text-destructive text-sm">{signupErrors.email}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
@@ -228,13 +243,14 @@ const AuthPage = () => {
                         id="signup-password"
                         type="password"
                         value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="pl-10"
+                        onChange={(e) => { setSignupPassword(e.target.value); setSignupErrors((p) => ({ ...p, password: undefined, confirm: signupConfirmPassword !== e.target.value ? "Passwords do not match." : undefined })); }}
+                        placeholder="At least 6 characters"
+                        className={`pl-10 ${signupErrors.password ? "border-destructive" : ""}`}
                         required
                         minLength={6}
                       />
                     </div>
+                    {signupErrors.password && <p className="text-destructive text-sm">{signupErrors.password}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm">Confirm Password</Label>
@@ -244,12 +260,13 @@ const AuthPage = () => {
                         id="signup-confirm"
                         type="password"
                         value={signupConfirmPassword}
-                        onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                        onChange={(e) => { setSignupConfirmPassword(e.target.value); setSignupErrors((p) => ({ ...p, confirm: signupPassword !== e.target.value ? "Passwords do not match." : undefined })); }}
                         placeholder="••••••••"
-                        className="pl-10"
+                        className={`pl-10 ${signupErrors.confirm ? "border-destructive" : ""}`}
                         required
                       />
                     </div>
+                    {signupErrors.confirm && <p className="text-destructive text-sm">{signupErrors.confirm}</p>}
                   </div>
                   <Button type="submit" className="w-full gap-2" disabled={isLoading}>
                     {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating Account...</> : <><span>Create Account</span><ArrowRight className="h-4 w-4" /></>}

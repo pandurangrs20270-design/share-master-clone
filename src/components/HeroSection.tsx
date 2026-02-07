@@ -110,7 +110,7 @@ const HeroSection = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <Play size={20} />
-                Get in Touch
+                About Us
               </motion.a>
             </motion.div>
 
