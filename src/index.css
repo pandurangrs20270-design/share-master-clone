@@ -240,4 +240,62 @@
     backdrop-filter: blur(20px);
     border: 1px solid hsl(0 0% 100% / 0.3);
   }
+  
+  /* Blog content typography */
+  .blog-content {
+    @apply text-foreground/90 leading-relaxed;
+  }
+  
+  .blog-content h1,
+  .blog-content h2,
+  .blog-content h3 {
+    @apply font-bold text-foreground mt-8 mb-4;
+    scroll-margin-top: 6rem;
+  }
+  
+  .blog-content h1 { @apply text-3xl; }
+  .blog-content h2 { @apply text-2xl; }
+  .blog-content h3 { @apply text-xl; }
+  
+  .blog-content p {
+    @apply mb-4;
+  }
+  
+  .blog-content a {
+    @apply text-primary hover:underline;
+  }
+  
+  .blog-content blockquote {
+    @apply border-l-4 border-primary pl-6 italic text-muted-foreground my-6;
+  }
+  
+  .blog-content ul,
+  .blog-content ol {
+    @apply my-4 ml-6;
+  }
+  
+  .blog-content li {
+    @apply mb-2;
+  }
+  
+  .blog-content img {
+    @apply rounded-xl shadow-lg my-8;
+  }
+  
+  .blog-content pre {
+    @apply bg-muted rounded-xl p-4 overflow-x-auto my-6;
+  }
+  
+  .blog-content code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm;
+  }
+  
+  .blog-content hr {
+    @apply border-border my-8;
+  }
+  
+  /* Grid pattern for backgrounds */
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
 }
